@@ -364,8 +364,8 @@ export default class Detail {
               let container = document.getElementsByClassName('luna-modal-footer')[0]
               let input = document.getElementsByClassName('luna-modal-input')[0]
               if (!container && !input) {
-                container = document.getElementById('eruda')?.shadowRoot?.getElementsByClassName('luna-modal-footer')[0]
-                input = document.getElementById('eruda')?.shadowRoot?.getElementsByClassName('luna-modal-input')[0]
+                container = document.getElementById('eruda')?.shadowRoot?.querySelectorAll('.luna-modal-footer')[0]
+                input = document.getElementById('eruda')?.shadowRoot?.querySelectorAll('.luna-modal-input')[0]
               }
               interval = setInterval(() => input?.focus(), 50)
               var iframe = document.createElement('iframe')
