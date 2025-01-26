@@ -361,9 +361,13 @@ export default class Detail {
           if (isNull(property) || !property?.length || /\s/g.test(property)) return
           setTimeout(() => {
             try {
-              const containter = document.getElementsByClassName('luna-modal-footer')[0]
-              const input = document.getElementsByClassName('luna-modal-input')[0]
-              interval = setInterval(() => input.focus(), 50)
+              let container = document.getElementsByClassName('luna-modal-footer')[0]
+              let input = document.getElementsByClassName('luna-modal-input')[0]
+              if (!container && !input) {
+                container = document.getElementById('eruda')?.shadowRoot?.getElementsByClassName('luna-modal-footer')[0]
+                input = document.getElementById('eruda')?.shadowRoot?.getElementsByClassName('luna-modal-input')[0]
+              }
+              interval = setInterval(() => input?.focus(), 50)
               var iframe = document.createElement('iframe')
               iframe.style['margin-top'] = '10px'
               iframe.style.width = '100%'
@@ -372,7 +376,7 @@ export default class Detail {
               iframe.onload = () => {
                 setTimeout(interval && clearInterval(interval), 0)
               }
-              containter.appendChild(iframe)
+              container?.appendChild(iframe)
             } catch(err){return}
           })
           LunaModal.prompt('Value (exact)').then((value) => {

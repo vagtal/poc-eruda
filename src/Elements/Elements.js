@@ -113,9 +113,12 @@ export default class Elements extends Tool {
     }
   }
   _showSplit = () => {
-    const parent = document.getElementById('eruda-elements');
+    let parent = document.getElementById('eruda-elements');
+    if (!parent) {
+      parent = document.getElementById('eruda')?.shadowRoot?.getElementById('eruda-elements')
+    }
     this._showDetail()
-    parent.classList.toggle('eruda-split-view')
+    parent.classList?.toggle('eruda-split-view')
   }
   _showDetail = () => {
     if (!this._isShow || !this._curNode) {
