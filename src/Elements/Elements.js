@@ -112,6 +112,11 @@ export default class Elements extends Tool {
       $showDetail.rmClass(iconDisabled)
     }
   }
+  _showSplit = () => {
+    const parent = document.getElementById('eruda-elements');
+    this._showDetail()
+    parent.classList.toggle('eruda-split-view')
+  }
   _showDetail = () => {
     if (!this._isShow || !this._curNode) {
       return
@@ -130,6 +135,7 @@ export default class Elements extends Tool {
         <div class="control">
           <span class="icon icon-select select"></span>
           <span class="icon icon-eye show-detail"></span>
+          <span class="icon icon-caret-down show-split"></span>
           <span class="icon icon-copy copy-node"></span>
           <span class="icon icon-delete delete-node"></span>
         </div>
@@ -187,6 +193,7 @@ export default class Elements extends Tool {
     this._$control
       .on('click', c('.select'), this._toggleSelect)
       .on('click', c('.show-detail'), this._showDetail)
+      .on('click', c('.show-split'), this._showSplit)
       .on('click', c('.copy-node'), this._copyNode)
       .on('click', c('.delete-node'), this._deleteNode)
 

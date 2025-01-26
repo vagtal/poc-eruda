@@ -2,6 +2,19 @@
 @import '../style/mixin';
 
 #elements {
+  &.split-view {
+    display: flex;
+    flex-direction: column;
+    .show-detail, .back {
+      display: none !important;
+    }
+    .elements, .detail {
+      display: block;
+      position: relative;
+      max-height: 50%;
+      width: 100%;
+    }
+  }
   .elements {
     @include absolute();
     padding-top: 40px;
@@ -12,13 +25,16 @@
     padding: 10px 0;
     @include control();
     .icon-eye {
+      right: 40px;
+    }
+    .show-split {
       right: 0;
     }
     .icon-copy {
-      right: 23px;
+      right: 80px;
     }
     .icon-delete {
-      right: 46px;
+      right: 120px;
     }
   }
   .dom-viewer-container {
@@ -293,10 +309,13 @@
           display: none;
         }
         .icon-copy {
-          right: 0;
+          right: 40px;
         }
         .icon-delete {
-          right: 23px;
+          right: 80px;
+        }
+        .show-split {
+          right: 0;
         }
       }
     }
