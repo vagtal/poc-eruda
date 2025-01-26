@@ -140,7 +140,7 @@
       margin-right: 10px;
       cursor:pointer;
       &:hover {
-        color: red;
+        color: #FF6188 !important;
       }
     }
     a {
@@ -230,9 +230,12 @@
     .delete-style {
       vertical-align: middle;
       margin-right: 10px;
+      height: 25px;
+      line-height: 25px;
+      width: fit-content;
       cursor:pointer;
-      &:hover {
-        color: red;
+      &:hover, &:hover span {
+        color: #FF6188 !important;
       }
     }
     .style-wrapper {

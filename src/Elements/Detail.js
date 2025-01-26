@@ -201,9 +201,10 @@ export default class Detail {
             style = { [is.key]: valImportant(is.val) }
           }
         })
+        const isElementStyle = selectorText === 'element.style'
+        
         style = map(style, (val, key) => {
-          const remove = selectorText === 'element.style' ? `<i attr:key="${key}" class="eruda-icon eruda-icon-delete ${c('delete-style')}"></i>` : ''
-          return `<div class="${c('rule')}${selectorText === 'element.style' ? (!inlineStyles?.find(is => is.key === key)  ? ' eruda-secondary-rule'  : '') : ''}">${remove}<span class="eruda-porperty-color">${escape(
+          return `<div ${isElementStyle ? `attr:key="${key}"` : ''}  class="${c('rule')} ${isElementStyle ?  c('delete-style') : ''} ${isElementStyle ? (!inlineStyles?.find(is => is.key === key)  ? 'eruda-secondary-rule'  : '') : ''}"><span class="eruda-porperty-color">${escape(
             key
           )}</span>: ${val} </div>`
         }).join('')
@@ -357,35 +358,46 @@ export default class Detail {
       .on('click', c('.add-style'), () => {
         let interval = null
         LunaModal.prompt('Poperty name (exact)').then((property) => {
-          property = property?.trim().toLowerCase()
-          if (isNull(property) || !property?.length || /\s/g.test(property)) return
-          setTimeout(() => {
-            try {
-              let container = document.getElementsByClassName('luna-modal-footer')[0]
-              let input = document.getElementsByClassName('luna-modal-input')[0]
-              if (!container && !input) {
-                container = document.getElementById('eruda')?.shadowRoot?.querySelectorAll('.luna-modal-footer')[0]
-                input = document.getElementById('eruda')?.shadowRoot?.querySelectorAll('.luna-modal-input')[0]
-              }
-              interval = setInterval(() => input?.focus(), 50)
-              var iframe = document.createElement('iframe')
-              iframe.style['margin-top'] = '10px'
-              iframe.style.width = '100%'
-              iframe.style.height = ' 300px'
-              iframe.src = `https://css-tricks.com/almanac/properties/${Array.from(property)[0]}/${property}/#aa-syntax`
-              iframe.onload = () => {
-                setTimeout(interval && clearInterval(interval), 0)
-              }
-              container?.appendChild(iframe)
-            } catch(err){return}
-          })
-          LunaModal.prompt('Value (exact)').then((value) => {
-            interval && clearInterval(interval)
-            if (isNull(value) || !value?.length) return
-            value = value.split('!')
-            this._curEl.style.setProperty(property, value[0]?.trim(), value[1]?.trim())
+          property = property?.trim()
+          if (isNull(property) || !property?.length) return
+          const prop = property.split(':')
+          if (prop[1]) {
+            const value = prop[1].split('!')
+            value[0] = value[0]?.trim()
+            value[0] = value[0]?.includes(';') ? value[0]?.substring(0, value[0]?.length - 1) : value[0]
+            value[1] = value[1]?.includes(';') ? value[1]?.substring(0, value[1]?.length - 1) : value[1]
+            this._curEl.style.setProperty(prop[0]?.trim()?.toLowerCase(), value[0], value[1]?.trim())
             this._render()
-          })
+          } else {
+            property = property.toLowerCase()
+            setTimeout(() => {
+              try {
+                let container = document.getElementsByClassName('luna-modal-footer')[0]
+                let input = document.getElementsByClassName('luna-modal-input')[0]
+                if (!container && !input) {
+                  container = document.getElementById('eruda')?.shadowRoot?.querySelectorAll('.luna-modal-footer')[0]
+                  input = document.getElementById('eruda')?.shadowRoot?.querySelectorAll('.luna-modal-input')[0]
+                }
+                interval = setInterval(() => input?.focus(), 50)
+                var iframe = document.createElement('iframe')
+                iframe.style['margin-top'] = '15px'
+                iframe.style.width = '100%'
+                iframe.style.height = ' 300px'
+                iframe.src = `https://css-tricks.com/almanac/properties/${Array.from(property)[0]}/${property}/#aa-syntax`
+                iframe.onload = () => {
+                  setTimeout(interval && clearInterval(interval), 0)
+                }
+                container?.appendChild(iframe)
+              } catch(err){return}
+            })
+            LunaModal.prompt('Value (exact) of: ' + property.toUpperCase()).then((value) => {
+              interval && clearInterval(interval)
+              if (isNull(value) || !value?.length) return
+              value = value.split('!')
+              this._curEl.style.setProperty(property, value[0]?.trim(), value[1]?.trim())
+              this._render()
+            })
+          }
         })
       })
       .on('click', c('.delete-style'), (el) => {
