@@ -27,6 +27,16 @@ import chobitsu from '../lib/chobitsu'
 import { formatNodeName } from './util'
 import { isErudaEl, classPrefix as c } from '../lib/util'
 
+function separarStyles(syl) {
+  const regex = /\/\*.*?\*\/|[^;]+;/g
+  return syl.match(regex).map(e => e.trim())
+}
+
+function valImportant(val) {
+  const splitted = val.split('!')
+  return val.includes('!important') ? `${splitted[0]} <span class="eruda-important">${splitted[1]}</span>` : val
+}
+
 export default class Detail {
   constructor($container, devtools) {
     this._$container = $container
@@ -183,14 +193,6 @@ export default class Detail {
           key: elSplitted[0]
         }
       })
-      function separarStyles(syl) {
-        const regex = /\/\*.*?\*\/|[^;]+;/g
-        return syl.match(regex).map(e => e.trim())
-      }    
-      function valImportant(val) {
-        const splitted = val.split('!')
-        return val.includes('!important') ? `${splitted[0]} <span class="eruda-important">${splitted[1]}</span>` : val
-      }
       const style = map(data.styles, ({ selectorText, style }) => {
         inlineStyles?.length && inlineStyles?.forEach(is => {
           if (style && !style[is]) {
