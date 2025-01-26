@@ -149,16 +149,22 @@ export default class Detail {
 
     $elementName.html(data.name)
 
+    function prepareRemoveClass (key) {
+      return `<span attr:key="${key}" class="${c('delete-class')}">${key}</span>`
+    }
+
     let attributes = '<tr><td>Empty</td></tr>'
     if (!isEmpty(data.attributes)) {
       attributes = map(data.attributes, ({ name, value }) => {
         return `<tr>
           <td class="${c('attribute-name-color')}">${escape(name)}</td>
-          <td class="${c('string-color')}">${value}</td>
+          <td class="${c('string-color')}">${escape(name) === 'class' && value?.length ? value.split(' ').map(el => `${prepareRemoveClass(el)}`).join(' ') : `${value}`}</td>
         </tr>`
       }).join('')
     }
-    attributes = `<h2>Attributes</h2>
+    attributes = `<h2>Attributes
+      <i class="${c('add-class')}">+</i>
+      </h2>
     <div class="${c('table-wrapper')}">
       <table>
         <tbody>
@@ -170,19 +176,44 @@ export default class Detail {
 
     let styles = ''
     if (!isEmpty(data.styles)) {
+      const inlineStyles = this._curEl.getAttribute('style') && separarStyles(this._curEl.getAttribute('style'))?.filter(el => el.length)?.map(el => {
+        const elSplitted = el.trim()?.split(':')
+        return {
+          val: elSplitted[1],
+          key: elSplitted[0]
+        }
+      })
+      function separarStyles(syl) {
+        const regex = /\/\*.*?\*\/|[^;]+;/g
+        return syl.match(regex).map(e => e.trim())
+      }    
+      function valImportant(val) {
+        const splitted = val.split('!')
+        return val.includes('!important') ? `${splitted[0]} <span class="eruda-important">${splitted[1]}</span>` : val
+      }
       const style = map(data.styles, ({ selectorText, style }) => {
+        inlineStyles?.length && inlineStyles?.forEach(is => {
+          if (style && !style[is]) {
+            style[is.key] = valImportant(is.val)
+          } else if (!style) {
+            style = { [is.key]: valImportant(is.val) }
+          }
+        })
         style = map(style, (val, key) => {
-          return `<div class="${c('rule')}"><span>${escape(
+          const remove = selectorText === 'element.style' ? `<i attr:key="${key}" class="eruda-icon eruda-icon-delete ${c('delete-style')}"></i>` : ''
+          return `<div class="${c('rule')}${selectorText === 'element.style' ? (!inlineStyles?.find(is => is.key === key)  ? ' eruda-secondary-rule'  : '') : ''}">${remove}<span class="eruda-porperty-color">${escape(
             key
-          )}</span>: ${val};</div>`
+          )}</span>: ${val} </div>`
         }).join('')
         return `<div class="${c('style-rules')}">
           <div>${escape(selectorText)} {</div>
             ${style}
           <div>}</div>
         </div>`
-      }).join('')
-      styles = `<h2>Styles</h2>
+      })?.join('')
+      styles = `<h2>Styles
+        <i class="eruda-icon-play ${c('add-style')}"></i>
+      </h2>
       <div class="${c('style-wrapper')}">
         ${style}
       </div>`
@@ -313,6 +344,58 @@ export default class Detail {
       .on('click', c('.toggle-all-computed-style'), () =>
         this._toggleAllComputedStyle()
       )
+      .on('click', c('.add-class'), () => {
+        LunaModal.prompt('Add class').then((newClass) => {
+          newClass = newClass?.trim()
+          if (isNull(newClass) || !newClass?.length || /\s/g.test(newClass)) return
+          this._curEl.classList.add(newClass)
+          this._render()
+        })
+      })
+      .on('click', c('.add-style'), () => {
+        let interval = null
+        LunaModal.prompt('Poperty name (exact)').then((property) => {
+          property = property?.trim().toLowerCase()
+          if (isNull(property) || !property?.length || /\s/g.test(property)) return
+          setTimeout(() => {
+            try {
+              const containter = document.getElementsByClassName('luna-modal-footer')[0]
+              const input = document.getElementsByClassName('luna-modal-input')[0]
+              interval = setInterval(() => input.focus(), 50)
+              var iframe = document.createElement('iframe')
+              iframe.style['margin-top'] = '10px'
+              iframe.style.width = '100%'
+              iframe.style.height = ' 300px'
+              iframe.src = `https://css-tricks.com/almanac/properties/${Array.from(property)[0]}/${property}/#aa-syntax`
+              iframe.onload = () => {
+                setTimeout(interval && clearInterval(interval), 0)
+              }
+              containter.appendChild(iframe)
+            } catch(err){return}
+          })
+          LunaModal.prompt('Value (exact)').then((value) => {
+            interval && clearInterval(interval)
+            if (isNull(value) || !value?.length) return
+            value = value.split('!')
+            this._curEl.style.setProperty(property, value[0]?.trim(), value[1]?.trim())
+            this._render()
+          })
+        })
+      })
+      .on('click', c('.delete-style'), (el) => {
+        const key = el.curTarget.getAttribute('attr:key')
+        if (key) {
+          this._curEl.style[key] = ''
+          this._render()
+        }
+      })
+      .on('click', c('.delete-class'), (el) => {
+        const key = el.curTarget.getAttribute('attr:key')
+        if (key) {
+          this._curEl.classList.remove(key)
+          this._render()
+        }
+      })
       .on('click', c('.computed-style-search'), () => {
         LunaModal.prompt('Filter').then((filter) => {
           if (isNull(filter)) return

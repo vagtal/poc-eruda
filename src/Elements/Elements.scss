@@ -105,6 +105,28 @@
   }
   .attributes {
     font-size: $font-size-s;
+    h2 {
+      position: relative;
+      i {
+        cursor:pointer; 
+        position:absolute;
+        right: 0;
+        font-size: 1.4rem;
+        padding: 10px;
+        top: 0;
+        &:hover {
+          color: #5b595c;
+        }
+      }
+    }
+    .delete-class {
+      vertical-align: middle;
+      margin-right: 10px;
+      cursor:pointer;
+      &:hover {
+        color: red;
+      }
+    }
     a {
       color: var(--link-color);
     }
@@ -116,6 +138,7 @@
         padding: 5px 10px;
       }
     }
+    
   }
   .text-content {
     background: #fff;
@@ -162,20 +185,60 @@
   }
   .styles {
     font-size: $font-size-s;
+    .porperty-color {
+      color: #78DCE8 !important;
+    }
+    .important {
+      color: #FF6188 !important;
+    }
+    .secondary-rule {
+      padding-left: 0 !important;
+      color: #FFD866 !important;
+      span {
+        color: #FFD866 !important;
+      }
+    }  
+    h2 {
+      position: relative;
+      i {
+        cursor:pointer; 
+        position:absolute;
+        right: 0;
+        padding: 10px;
+        top: 0;
+        &:hover {
+          color: #5b595c;
+        }
+      }
+    }
+    .delete-style {
+      vertical-align: middle;
+      margin-right: 10px;
+      cursor:pointer;
+      &:hover {
+        color: red;
+      }
+    }
     .style-wrapper {
       padding: $padding;
       .style-rules {
         border: 1px solid var(--border);
         padding: $padding;
         margin-bottom: 10px;
+        display: flex;
+        flex-direction: column;
         .rule {
           padding-left: 2em;
           word-break: break-all;
+          order: 1;
           a {
             color: var(--link-color);
           }
           span {
             color: var(--var-color);
+          }
+          &:not(.secondary-rule) {
+            order: 0;
           }
         }
         &:last-child {
