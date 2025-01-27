@@ -172,7 +172,9 @@ export default class Detail {
         </tr>`
       }).join('')
     }
-    attributes = `<h2>Attributes
+    attributes = `<h2 class="${c('toggle-atributes')}">
+      <i class="eruda-icon eruda-icon-caret-down eruda-attribute-icon"></i>
+      Attributes
       <i class="${c('add-class')}">+</i>
       </h2>
     <div class="${c('table-wrapper')}">
@@ -214,7 +216,9 @@ export default class Detail {
           <div>}</div>
         </div>`
       })?.join('')
-      styles = `<h2>Styles
+      styles = `<h2 class="${c('toggle-styles')}">
+        <i class="eruda-icon eruda-icon-caret-down eruda-attribute-icon"></i>
+        Styles
         <i class="eruda-icon-play ${c('add-style')}"></i>
       </h2>
       <div class="${c('style-wrapper')}">
@@ -347,7 +351,36 @@ export default class Detail {
       .on('click', c('.toggle-all-computed-style'), () =>
         this._toggleAllComputedStyle()
       )
-      .on('click', c('.add-class'), () => {
+      .on('click', c('.toggle-atributes'), () => {
+        let container = document.querySelector('.eruda-attributes .eruda-table-wrapper');
+        if (!container) {
+          container = document.getElementById('eruda')?.shadowRoot?.querySelector('.eruda-attributes .eruda-table-wrapper')
+        }
+        if ( container?.style.display !== 'none') {
+          container.style.display = 'none';
+        }
+        else if (container) {
+          container.style.display = 'block';
+        }
+      })
+      .on('click', c('.toggle-styles'), () => {
+        let containers = document.querySelectorAll('.eruda-styles .eruda-style-wrapper');
+        if (!containers) {
+          containers = document.getElementById('eruda')?.shadowRoot?.querySelectorAll('.eruda-styles .eruda-style-wrapper')
+        }
+        console.log(containers)
+        containers?.forEach(container => {
+          if ( container?.style.display !== 'none') {
+            container.style.display = 'none';
+          }
+          else if (container){
+            container.style.display = 'block';
+          }
+        })
+      })
+      .on('click', c('.add-class'), (ev) => {
+        ev.preventDefault()
+        ev.stopPropagation()
         LunaModal.prompt('Add class').then((newClass) => {
           newClass = newClass?.trim()
           if (isNull(newClass) || !newClass?.length || /\s/g.test(newClass)) return
@@ -355,7 +388,9 @@ export default class Detail {
           this._render()
         })
       })
-      .on('click', c('.add-style'), () => {
+      .on('click', c('.add-style'), (ev) => {
+        ev.preventDefault()
+        ev.stopPropagation()
         let interval = null
         LunaModal.prompt('Poperty name (exact)').then((property) => {
           property = property?.trim()
@@ -372,11 +407,11 @@ export default class Detail {
             property = property.toLowerCase()
             setTimeout(() => {
               try {
-                let container = document.getElementsByClassName('luna-modal-footer')[0]
-                let input = document.getElementsByClassName('luna-modal-input')[0]
+                let container = document.getElementsByClassName('luna-modal-footer')
+                let input = document.getElementsByClassName('luna-modal-input')
                 if (!container && !input) {
-                  container = document.getElementById('eruda')?.shadowRoot?.querySelectorAll('.luna-modal-footer')[0]
-                  input = document.getElementById('eruda')?.shadowRoot?.querySelectorAll('.luna-modal-input')[0]
+                  container = document.getElementById('eruda')?.shadowRoot?.querySelector('.luna-modal-footer')
+                  input = document.getElementById('eruda')?.shadowRoot?.querySelector('.luna-modal-input')
                 }
                 interval = setInterval(() => input?.focus(), 50)
                 var iframe = document.createElement('iframe')

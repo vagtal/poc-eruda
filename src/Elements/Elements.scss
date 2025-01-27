@@ -15,6 +15,10 @@
       width: 100%;
     }
   }
+  .attribute-icon {
+    left: 75px;
+    width: 40px;
+  }
   .elements {
     @include absolute();
     padding-top: 40px;
@@ -122,9 +126,9 @@
   .attributes {
     font-size: $font-size-s;
     h2 {
+      cursor:pointer;
       position: relative;
-      i {
-        cursor:pointer; 
+      i { 
         position:absolute;
         right: 0;
         font-size: 1.4rem;
@@ -216,14 +220,18 @@
     }  
     h2 {
       position: relative;
+      cursor: pointer;
       i {
-        cursor:pointer; 
-        position:absolute;
+        position: absolute;
         right: 0;
+        font-size: 1.4rem;
         padding: 10px;
         top: 0;
         &:hover {
           color: #5b595c;
+        }
+        &.add-style {
+          font-size: 100%;
         }
       }
     }
