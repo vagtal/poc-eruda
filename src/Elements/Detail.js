@@ -352,29 +352,28 @@ export default class Detail {
         this._toggleAllComputedStyle()
       )
       .on('click', c('.toggle-atributes'), () => {
-        let container = document.querySelector('.eruda-attributes .eruda-table-wrapper');
-        if (!container) {
+        let container = document.querySelector('.eruda-attributes .eruda-table-wrapper')
+        if (!container?.length) {
           container = document.getElementById('eruda')?.shadowRoot?.querySelector('.eruda-attributes .eruda-table-wrapper')
         }
         if ( container?.style.display !== 'none') {
-          container.style.display = 'none';
+          container.style.display = 'none'
         }
         else if (container) {
-          container.style.display = 'block';
+          container.style.display = 'block'
         }
       })
       .on('click', c('.toggle-styles'), () => {
-        let containers = document.querySelectorAll('.eruda-styles .eruda-style-wrapper');
-        if (!containers) {
+        let containers = document.querySelectorAll('.eruda-styles .eruda-style-wrapper')
+        if (!containers?.length) {
           containers = document.getElementById('eruda')?.shadowRoot?.querySelectorAll('.eruda-styles .eruda-style-wrapper')
         }
-        console.log(containers)
         containers?.forEach(container => {
           if ( container?.style.display !== 'none') {
-            container.style.display = 'none';
+            container.style.display = 'none'
           }
           else if (container){
-            container.style.display = 'block';
+            container.style.display = 'block'
           }
         })
       })
