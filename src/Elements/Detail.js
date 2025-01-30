@@ -341,14 +341,11 @@ export default class Detail {
   }
   addInlineStyle() {    
     const styleProperty = getQuerySelector('#eruda-insert-style-property')?.value
-    const removeButton = getQuerySelector('.eruda-delete-inlinestyle')
     let styleValue = getQuerySelector('#eruda-insert-style-value')?.value
     if (styleProperty?.length && styleValue?.length) {
       styleValue = styleValue.split('!')
       this._curEl.style.setProperty(styleProperty?.trim(), styleValue[0]?.trim(), styleValue[1]?.trim())
-      const inlineEdit = getQuerySelector('#eruda-insert-style')
-      inlineEdit?.remove()      
-      removeButton?.classList?.toggle('eruda-disabled')
+      this._render()
     }
   }
   _changeDisplay(container) {
@@ -369,10 +366,13 @@ export default class Detail {
       const elementText = getQuerySelector('.eruda-element-styles')
       divAbove.id = 'eruda-insert-style';
       divAbove.innerHTML = `<input type="text" id="eruda-insert-style-property" value="${data?.key || ''}"/> : <input type="text" id="eruda-insert-style-value"  value="${data?.value || ''}"/>`
+      data?.parent && data.parent.remove()
       divAbove.addEventListener('keyup', (event) => {
           event.preventDefault();
           if (event.keyCode === 13) {
             this.addInlineStyle()
+            data && this._render()
+            inlineButton?.classList.toggle('eruda-active')
           }
       })
       elementText?.parentNode?.insertBefore(divAbove, elementText?.nextSibling);
@@ -391,9 +391,9 @@ export default class Detail {
       .on('click', c('.property-container'), (ev) => {
         ev.preventDefault()
         ev.stopPropagation()
-        const key = ev?.curTarget?.querySelector('.eruda-style-key')
-        const value = ev?.curTarget?.querySelector('.eruda-style-value')
-        key && value && this._showInline(key, value)
+        const key = ev?.curTarget?.querySelector('.eruda-style-key')?.innerText
+        const value = ev?.curTarget?.querySelector('.eruda-style-value')?.innerText
+        key && value && this._showInline({key, value, parent: ev?.curTarget})
 
       })
       .on('click', c('.toggle-atributes'), () => {
@@ -469,7 +469,7 @@ export default class Detail {
           inlineButton?.classList.toggle('eruda-active')
         }
       })
-      .on('click', c('.inline-styles'), () => this._showInline)
+      .on('click', c('.inline-styles'), () => this._showInline())
       .on('click', c('.delete-style'), (ev) => {
         ev.preventDefault()
         ev.stopPropagation()
