@@ -199,9 +199,10 @@ export default class Detail {
         const isElementStyle = selectorText === 'element.style'
         
         style = map(style, (val, key) => {
-          return `<div ${isElementStyle ? `attr:key="${key}"` : ''}  class="${c('rule')} ${isElementStyle ?  c('delete-style') : ''} ${isElementStyle ? (!inlineStyles?.find(is => is.key === key)  ? 'eruda-secondary-rule'  : '') : ''}"><span class="eruda-porperty-color">${escape(
+          return `<div class="${c('rule')} ${isElementStyle ? (!inlineStyles?.find(is => is.key === key)  ? 'eruda-secondary-rule'  : '') : ''}">${isElementStyle ?  `<i attr:key="${key}"
+           class="eruda-icon eruda-icon-delete ${c('delete-style')}"></i>` : ''}<span class="eruda-property-container"><span class="eruda-porperty-color eruda-style-key">${escape(
             key
-          )}</span>: ${val} </div>`
+          )}</span>: <span class="eruda-style-value">${val}</span></span></div>`
         }).join('')
         return `<div class="${c('style-rules')}">
           <div class="${isElementStyle ? c('element-styles') : ''}">${escape(selectorText)} {  ${isElementStyle ? `
@@ -357,6 +358,29 @@ export default class Detail {
       container.style.display = 'block'
     }
   }
+  _showInline(data) {
+    const inlineEdit = getQuerySelector('#eruda-insert-style')
+    const inlineButton = getQuerySelector('.eruda-inline-styles')
+    const removeButton = getQuerySelector('.eruda-delete-inlinestyle')
+    if (!inlineEdit) {
+      removeButton?.classList.toggle('eruda-disabled')
+      inlineButton?.classList.toggle('eruda-active')
+      const divAbove = document.createElement('div');
+      const elementText = getQuerySelector('.eruda-element-styles')
+      divAbove.id = 'eruda-insert-style';
+      divAbove.innerHTML = `<input type="text" id="eruda-insert-style-property" value="${data?.key || ''}"/> : <input type="text" id="eruda-insert-style-value"  value="${data?.value || ''}"/>`
+      divAbove.addEventListener('keyup', (event) => {
+          event.preventDefault();
+          if (event.keyCode === 13) {
+            this.addInlineStyle()
+          }
+      })
+      elementText?.parentNode?.insertBefore(divAbove, elementText?.nextSibling);
+      divAbove?.firstChild?.focus()
+    } else {
+      this.addInlineStyle()
+    }
+  }
   _bindEvent() {
     const devtools = this._devtools
 
@@ -364,6 +388,14 @@ export default class Detail {
       .on('click', c('.toggle-all-computed-style'), () =>
         this._toggleAllComputedStyle()
       )
+      .on('click', c('.property-container'), (ev) => {
+        ev.preventDefault()
+        ev.stopPropagation()
+        const key = ev?.curTarget?.querySelector('.eruda-style-key')
+        const value = ev?.curTarget?.querySelector('.eruda-style-value')
+        key && value && this._showInline(key, value)
+
+      })
       .on('click', c('.toggle-atributes'), () => {
         const container = getQuerySelector('.eruda-attributes .eruda-table-wrapper')
         this._changeDisplay(container)
@@ -437,29 +469,7 @@ export default class Detail {
           inlineButton?.classList.toggle('eruda-active')
         }
       })
-      .on('click', c('.inline-styles'), () => {
-        const inlineEdit = getQuerySelector('#eruda-insert-style')
-        const inlineButton = getQuerySelector('.eruda-inline-styles')
-        const removeButton = getQuerySelector('.eruda-delete-inlinestyle')
-        if (!inlineEdit) {
-          removeButton?.classList.toggle('eruda-disabled')
-          inlineButton?.classList.toggle('eruda-active')
-          const divAbove = document.createElement('div');
-          const elementText = getQuerySelector('.eruda-element-styles')
-          divAbove.id = 'eruda-insert-style';
-          divAbove.innerHTML = '<input type="text" id="eruda-insert-style-property" /> : <input type="text" id="eruda-insert-style-value" />'
-          divAbove.addEventListener('keyup', (event) => {
-              event.preventDefault();
-              if (event.keyCode === 13) {
-                this.addInlineStyle()
-              }
-          })
-          elementText?.parentNode?.insertBefore(divAbove, elementText?.nextSibling);
-          divAbove?.firstChild?.focus()
-        } else {
-          this.addInlineStyle()
-        }
-      })
+      .on('click', c('.inline-styles'), () => this._showInline)
       .on('click', c('.delete-style'), (ev) => {
         ev.preventDefault()
         ev.stopPropagation()

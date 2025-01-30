@@ -18,6 +18,7 @@ import Settings from '../Settings/Settings'
 import LunaConsole from 'luna-console'
 import LunaModal from 'luna-modal'
 import { classPrefix as c } from '../lib/util'
+import { keybindManager } from '../utils'
 
 uncaught.start()
 
@@ -41,10 +42,27 @@ export default class Console extends Tool {
     this._initLogger()
     this._exposeLogger()
     this._bindEvent()
+    keybindManager.addSection('console', async (event) => {
+      if (event.ctrlKey && event.key === 'Enter') {
+        if (Array.from(this._$inputContainer[0]?.classList)?.includes('eruda-active')) {
+          this._execute()
+        }
+      } else if (event.key === 'Escape') {
+        if (Array.from(this._$inputContainer[0]?.classList)?.includes('eruda-active')) {
+          this._hideInput()
+          this._$input[0]?.blur()
+        }
+      }
+    })
   }
   show() {
     super.show()
     this._handleShow()
+    keybindManager.listeners.console.keyboardListening = true
+  }
+  hide() {
+    super.hide()
+    keybindManager.listeners.console.keyboardListening = false
   }
   overrideConsole() {
     const origConsole = (this._origConsole = {})
@@ -153,8 +171,8 @@ export default class Console extends Tool {
       <div class="logs-container"></div>
       <div class="js-input">
         <div class="buttons">
-          <div class="button cancel">Cancel</div>
-          <div class="button execute">Execute</div>
+          <div class="button console-cancel">Cancel</div>
+          <div class="button console-execute">Execute</div>
         </div>
         <span class="icon-arrow-right"></span>
         <textarea class="console-text"></textarea>
@@ -163,7 +181,7 @@ export default class Console extends Tool {
     )
 
     const _$inputContainer = $el.find(c('.js-input'))
-    const _$input = _$inputContainer.find('.console-text')
+    const _$input = _$inputContainer.find('.eruda-console-text')
     const _$inputBtns = _$inputContainer.find(c('.buttons'))
 
     extend(this, {
@@ -222,6 +240,14 @@ export default class Console extends Tool {
         })
     )
   }
+  _execute() {
+    const jsInput = this._$input.val().trim()
+    if (jsInput === '') return
+
+    this._logger.evaluate(jsInput)
+    this._$input.val('').get(0).blur()
+    this._hideInput()
+  }
   _bindEvent() {
     const container = this._container
     const $input = this._$input
@@ -252,16 +278,8 @@ export default class Console extends Tool {
       })
 
     $inputBtns
-      .on('click', c('.cancel'), () => this._hideInput())
-      .on('click', c('.execute'), () => {
-        const jsInput = $input.val().trim()
-        if (jsInput === '') return
-
-        logger.evaluate(jsInput)
-        $input.val('').get(0).blur()
-        this._hideInput()
-      })
-
+      .on('click', c('.console-cancel'), () => this._hideInput())
+      .on('click', c('.console-execute'), () => this._execute())
     $input.on('focusin', () => this._showInput())
 
     logger.on('insert', (log) => {

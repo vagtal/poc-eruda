@@ -21,21 +21,27 @@ export function toValidJSONOrString(input) {
 }
 
  class keyBinds {
-    elements = {
-        checkElementsKeyboard: false,
-        elementstListennerFN: undefined
-    }
+    listeners = {}
 
     constructor() {
         document.addEventListener('keydown', async(event) => {
-            try {               
-                if (this.elements.checkElementsKeyboard) {
-                    await this.elements.elementstListennerFN(event)
-                }
+            try {
+                await Object.getOwnPropertyNames(this.listeners)?.forEach(async (section) => {
+                    if (this.listeners[section]?.keyboardListening) {
+                        await this.listeners[section]?.listeningFn(event)
+                    }
+                })
             } catch (err) {
                 console.error(err)
             }
         })
+    }
+
+    addSection(section, listeningFn) {
+        this.listeners[section] = {
+            keyboardListening: false,
+            listeningFn
+        }
     }
 }
 
