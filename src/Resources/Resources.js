@@ -17,16 +17,21 @@ import evalCss from '../lib/evalCss'
 import Storage from './Storage'
 import Cookie from './Cookie'
 import { setState, getState } from './util'
+import { getQuerySelector, toValidJSONOrString } from '../utils'
+
 
 export default class Resources extends Tool {
   constructor() {
     super()
 
     this._style = evalCss(require('./Resources.scss'))
-
     this.name = 'resources'
     this._hideErudaSetting = false
     this._observeElement = true
+    this.editInput = {
+      type: '',
+      key: ''
+    }
   }
   init($el, container) {
     super.init($el)
@@ -268,13 +273,22 @@ export default class Resources extends Tool {
   _initTpl() {
     const $el = this._$el
     $el.html(
-      c(`<div class="section local-storage"></div>
-      <div class="section session-storage"></div>
-      <div class="section cookie"></div>
-      <div class="section script"></div>
-      <div class="section stylesheet"></div>
-      <div class="section iframe"></div>
-      <div class="section image"></div>`)
+      c(`<div class="resources-container">
+        <div class="section local-storage"></div>
+        <div class="section session-storage"></div>
+        <div class="section cookie"></div>
+        <div class="section script"></div>
+        <div class="section stylesheet"></div>
+        <div class="section iframe"></div>
+        <div class="section image"></div>
+      </div>   
+      <div class="resource-input hidden">
+        <div class="resource-buttons">
+          <div class="button resource-cancel">Cancel</div>
+          <div class="button resource-execute">Execute</div>
+        </div>
+        <textarea class="resource-text"></textarea>
+      </div>`)
     )
     this._$localStorage = $el.find(c('.local-storage'))
     this._$sessionStorage = $el.find(c('.session-storage'))
@@ -289,11 +303,19 @@ export default class Resources extends Tool {
     const container = this._container
 
     $el
+      .on('click', '.eruda-resource-cancel', () => {
+        this._toggleLSInput()
+      })
+      .on('click', '.eruda-resource-execute', () => {
+        this._changeInput()
+        this._toggleLSInput()
+      })
       .on('click', '.eruda-refresh-script', () => {
         container.notify('Refreshed', { icon: 'success' })
         this.refreshScript()
       })
       .on('click', '.eruda-refresh-stylesheet', () => {
+        console.log(this._localStorage)
         container.notify('Refreshed', { icon: 'success' })
         this.refreshStylesheet()
       })
@@ -343,6 +365,38 @@ export default class Resources extends Tool {
             dataType: 'raw',
           })
         }
+      }
+    }
+  }
+  _toggleLSInput() {
+    const inputContainer = getQuerySelector('.eruda-resource-input')
+    const resourcesContainer = getQuerySelector('.eruda-resources-container')
+    inputContainer?.classList?.toggle('eruda-hidden')
+    resourcesContainer?.classList?.toggle('eruda-hidden')
+  }
+  _changeInput() {
+    try {
+      const textarea = getQuerySelector('.eruda-resource-text')
+      window[this.editInput.type].setItem(this.editInput.key, toValidJSONOrString(textarea?.value))
+    } catch (err) {
+      console.eror(err)
+    }
+    this.refreshLocalStorage()
+    this.refreshSessionStorage()
+  }
+  _showLSInput(type) {
+    const objType = this[`_${type}Storage`]?._selectedItem
+    const textType = `${type}Storage`
+    if (objType) {
+      const textarea = getQuerySelector('.eruda-resource-text')
+      const data = window[textType]?.getItem(objType)
+      if (textarea) {
+        textarea.value = data || ''
+        this.editInput = {
+          type: textType,
+          key: objType
+        }
+        this._toggleLSInput()
       }
     }
   }

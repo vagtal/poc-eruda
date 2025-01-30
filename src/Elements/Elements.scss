@@ -185,6 +185,9 @@
   }
   .computed-style {
     font-size: $font-size-s;
+    .computed-element {
+      cursor: pointer;
+    }
     a {
       color: var(--link-color);
     }
@@ -234,6 +237,57 @@
           font-size: 100%;
         }
       }
+    }
+    .delete-inlinestyle {
+      margin-left: 10px;
+      &.disabled {
+        color: #939293;
+        cursor: default !important;
+        &:hover {
+          color: #939293 !important;
+        }
+      }
+    }
+    .inline-styles {
+      margin-left: 10px;
+        &.active {
+          color: #FFD866 !important;
+          cursor: pointer;
+          &:hover {
+            color: #FFD866 !important;
+          }
+        }
+    }
+    #insert-style {
+      margin: 5px 0;
+      display: flex;
+      input {
+        margin: 0 5px;
+        width: auto;
+      }
+      #insert-style-property {
+        min-width: 100px;
+      }
+      #insert-style-value {
+        min-width: auto;
+        flex: 1;
+      }
+      span {
+        position: relative;
+        margin-right: 5px;
+        top: 1.5px;
+        cursor: pointer;
+        &:hover {
+          color: #5b595c;
+        }
+      }
+    }
+    .delete-inlinestyle:hover, .inline-styles:hover {
+      color: #5b595c;
+      cursor: pointer;
+    }
+    .inline-styles:hover {
+      margin-left: 10px;
     }
     .delete-style {
       vertical-align: middle;

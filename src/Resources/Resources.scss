@@ -5,6 +5,9 @@
   @include overflow-auto(y);
   padding: 10px;
   font-size: 14px;
+  .hidden {
+    display: none;
+  }
   .section {
     margin-bottom: 10px;
     overflow: hidden;
@@ -31,6 +34,62 @@
         border: 1px solid var(--border);
         border-bottom: none;
       }
+    }
+  }
+  .resource-input {
+    overflow: hidden;
+    pointer-events: none;
+    position: absolute;
+    z-index: 100;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    border-top: 1px solid var(--border);
+    height: 100%;
+    border-top: none;
+    .resource-buttons {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      display: flex;
+      width: 100%;
+      height: 40px;
+      color: var(--primary);
+      background: var(--darker-background);
+      font-size: $font-size-s;
+      border-top: 1px solid var(--border);
+      .button {
+        pointer-events: all;
+        cursor: pointer;
+        flex: 1;
+        text-align: center;
+        border-right: 1px solid var(--border);
+        height: 40px;
+        line-height: 40px;
+        transition: background-color $anim-duration, color $anim-duration;
+        &:last-child {
+          border-right: none;
+        }
+        &:active {
+          color: var(--select-foreground);
+          background: var(--highlight);
+        }
+      }
+    }
+    textarea {
+      pointer-events: all;
+      padding: 3px 10px;
+      outline: none;
+      border: none;
+      font-size: $font-size;
+      width: 100%;
+      height: 100%;
+      user-select: text;
+      resize: none;
+      color: var(--primary);
+      background: var(--background);
+      overflow: auto;
+      padding-left: 10px;
     }
   }
   .title {

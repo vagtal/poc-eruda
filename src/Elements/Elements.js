@@ -17,6 +17,7 @@ import Detail from './Detail'
 import chobitsu from '../lib/chobitsu'
 import emitter from '../lib/emitter'
 import { formatNodeName } from './util'
+import { getQuerySelector, keybindManager } from '../utils'
 
 export default class Elements extends Tool {
   constructor() {
@@ -28,6 +29,22 @@ export default class Elements extends Tool {
     this._selectElement = false
     this._observeElement = true
     this._history = []
+
+    keybindManager.elements.elementstListennerFN = async (event) => {
+      if (event.key === 'Delete') {
+          this._deleteNode()
+      }
+      if (event.ctrlKey && (event.key === 'c' || event.key === 'C')) {
+          this._copyNode()
+      }
+      if (event.ctrlKey && (event.key === 'v' || event.key === 'V')) {
+          await this._curNode.insertAdjacentHTML('afterend', await navigator.clipboard.readText() || '');
+      }
+      if (event.ctrlKey && (event.key === 'x' || event.key === 'X')) {
+          this._copyNode()
+          this._deleteNode()
+      }
+    }
 
     Emitter.mixin(this)
   }
@@ -55,7 +72,7 @@ export default class Elements extends Tool {
   show() {
     super.show()
     this._isShow = true
-
+    keybindManager.elements.checkElementsKeyboard = true
     if (!this._curNode) {
       this.select(document.body)
     } else if (this._splitMode) {
@@ -65,7 +82,7 @@ export default class Elements extends Tool {
   hide() {
     super.hide()
     this._isShow = false
-
+    keybindManager.elements.checkElementsKeyboard = false
     chobitsu.domain('Overlay').hideHighlight()
   }
   select(node) {
@@ -76,7 +93,6 @@ export default class Elements extends Tool {
   }
   destroy() {
     super.destroy()
-
     emitter.off(emitter.SCALE, this._updateScale)
     evalCss.remove(this._style)
     this._detail.destroy()
@@ -113,10 +129,7 @@ export default class Elements extends Tool {
     }
   }
   _showSplit = () => {
-    let parent = document.getElementById('eruda-elements');
-    if (!parent) {
-      parent = document.getElementById('eruda')?.shadowRoot?.getElementById('eruda-elements')
-    }
+    const parent = getQuerySelector('eruda-elements');
     this._showDetail()
     parent.classList?.toggle('eruda-split-view')
   }
@@ -175,7 +188,7 @@ export default class Elements extends Tool {
       parent = parentQueue.shift()
     }
 
-    this.set(parent)
+    this._setNode(parent)
   }
   _bindEvent() {
     const self = this

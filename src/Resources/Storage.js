@@ -93,16 +93,19 @@ export default class Storage {
     const $showDetail = $container.find(c('.show-detail'))
     const $deleteStorage = $container.find(c('.delete-storage'))
     const $copyStorage = $container.find(c('.copy-storage'))
+    const $editStorage = $container.find(c('.edit-storage'))
     const btnDisabled = c('btn-disabled')
 
     $showDetail.addClass(btnDisabled)
     $deleteStorage.addClass(btnDisabled)
     $copyStorage.addClass(btnDisabled)
+    $editStorage.addClass(btnDisabled)
 
     if (this._selectedItem) {
       $showDetail.rmClass(btnDisabled)
       $deleteStorage.rmClass(btnDisabled)
       $copyStorage.rmClass(btnDisabled)
+      $editStorage.rmClass(btnDisabled)
     }
   }
   _initTpl() {
@@ -112,6 +115,9 @@ export default class Storage {
     $container.html(
       c(`<h2 class="title">
       ${type === 'local' ? 'Local' : 'Session'} Storage
+      <div class="btn edit-storage btn-disabled">
+        <span class="icon eruda-icon-play"></span>
+      </div>
       <div class="btn refresh-storage">
         <span class="icon icon-refresh"></span>
       </div>
@@ -154,6 +160,9 @@ export default class Storage {
     const devtools = this._devtools
 
     this._$container
+      .on('click', c('.edit-storage'), () => {
+        this._resources._showLSInput(this._type)
+      })
       .on('click', c('.refresh-storage'), () => {
         devtools.notify('Refreshed', { icon: 'success' })
         this.refresh()

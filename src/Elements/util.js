@@ -3,6 +3,16 @@ import isStr from 'licia/isStr'
 import isShadowRoot from 'licia/isShadowRoot'
 import { classPrefix as c } from '../lib/util'
 
+export function sepateStyles(syl) {
+  const regex = /\/\*.*?\*\/|[^;]+;/g
+  return syl.match(regex).map(e => e.trim())
+}
+
+export function valImportant(val) {
+  const splitted = val.split('!')
+  return val.includes('!important') ? `${splitted[0]} <span class="eruda-important">${splitted[1]}</span>` : val
+}
+
 export function formatNodeName(node, { noAttr = false } = {}) {
   if (node.nodeType === Node.TEXT_NODE) {
     return `<span class="${c('tag-name-color')}">(text)</span>`

@@ -24,18 +24,11 @@ import Settings from '../Settings/Settings'
 import LunaModal from 'luna-modal'
 import LunaBoxModel from 'luna-box-model'
 import chobitsu from '../lib/chobitsu'
-import { formatNodeName } from './util'
+import { formatNodeName, sepateStyles, valImportant } from './util'
+import { getQuerySelector } from '../utils'
 import { isErudaEl, classPrefix as c } from '../lib/util'
 
-function separarStyles(syl) {
-  const regex = /\/\*.*?\*\/|[^;]+;/g
-  return syl.match(regex).map(e => e.trim())
-}
 
-function valImportant(val) {
-  const splitted = val.split('!')
-  return val.includes('!important') ? `${splitted[0]} <span class="eruda-important">${splitted[1]}</span>` : val
-}
 
 export default class Detail {
   constructor($container, devtools) {
@@ -168,7 +161,7 @@ export default class Detail {
       attributes = map(data.attributes, ({ name, value }) => {
         return `<tr>
           <td class="${c('attribute-name-color')}">${escape(name)}</td>
-          <td class="${c('string-color')}">${escape(name) === 'class' && value?.length ? value.split(' ').map(el => `${prepareRemoveClass(el)}`).join(' ') : `${value}`}</td>
+          <td class="${c('string-color')}">${(escape(name) === 'class' && value?.length) ? value.split(' ')?.map(el => `${prepareRemoveClass(el)}`)?.join(' ') : `${value}`}</td>
         </tr>`
       }).join('')
     }
@@ -188,7 +181,7 @@ export default class Detail {
 
     let styles = ''
     if (!isEmpty(data.styles)) {
-      const inlineStyles = this._curEl.getAttribute('style') && separarStyles(this._curEl.getAttribute('style'))?.filter(el => el.length)?.map(el => {
+      const inlineStyles = this._curEl?.getAttribute('style') && sepateStyles(this._curEl?.getAttribute('style'))?.filter(el => el.length)?.map(el => {
         const elSplitted = el.trim()?.split(':')
         return {
           val: elSplitted[1],
@@ -211,7 +204,8 @@ export default class Detail {
           )}</span>: ${val} </div>`
         }).join('')
         return `<div class="${c('style-rules')}">
-          <div>${escape(selectorText)} {</div>
+          <div class="${isElementStyle ? c('element-styles') : ''}">${escape(selectorText)} {  ${isElementStyle ? `
+          <i class="eruda-icon eruda-icon-delete eruda-disabled ${c('delete-inlinestyle')}"></i><i class="eruda-icon-play ${c('inline-styles')}"></i>` : ''}</div>
             ${style}
           <div>}</div>
         </div>`
@@ -344,6 +338,25 @@ export default class Detail {
 
     return ret
   }
+  addInlineStyle() {    
+    const styleProperty = getQuerySelector('#eruda-insert-style-property')?.value
+    const removeButton = getQuerySelector('.eruda-delete-inlinestyle')
+    let styleValue = getQuerySelector('#eruda-insert-style-value')?.value
+    if (styleProperty?.length && styleValue?.length) {
+      styleValue = styleValue.split('!')
+      this._curEl.style.setProperty(styleProperty?.trim(), styleValue[0]?.trim(), styleValue[1]?.trim())
+      const inlineEdit = getQuerySelector('#eruda-insert-style')
+      inlineEdit?.remove()      
+      removeButton?.classList?.toggle('eruda-disabled')
+    }
+  }
+  _changeDisplay(container) {
+    if (container?.style?.display !== 'none') {
+      container.style.display = 'none'
+    } else if (container) {
+      container.style.display = 'block'
+    }
+  }
   _bindEvent() {
     const devtools = this._devtools
 
@@ -352,29 +365,13 @@ export default class Detail {
         this._toggleAllComputedStyle()
       )
       .on('click', c('.toggle-atributes'), () => {
-        let container = document.querySelector('.eruda-attributes .eruda-table-wrapper')
-        if (!container?.length) {
-          container = document.getElementById('eruda')?.shadowRoot?.querySelector('.eruda-attributes .eruda-table-wrapper')
-        }
-        if ( container?.style.display !== 'none') {
-          container.style.display = 'none'
-        }
-        else if (container) {
-          container.style.display = 'block'
-        }
+        const container = getQuerySelector('.eruda-attributes .eruda-table-wrapper')
+        this._changeDisplay(container)
       })
       .on('click', c('.toggle-styles'), () => {
-        let containers = document.querySelectorAll('.eruda-styles .eruda-style-wrapper')
-        if (!containers?.length) {
-          containers = document.getElementById('eruda')?.shadowRoot?.querySelectorAll('.eruda-styles .eruda-style-wrapper')
-        }
+        const containers = getQuerySelector('.eruda-styles .eruda-style-wrapper', true)
         containers?.forEach(container => {
-          if ( container?.style.display !== 'none') {
-            container.style.display = 'none'
-          }
-          else if (container){
-            container.style.display = 'block'
-          }
+          this._changeDisplay(container)
         })
       })
       .on('click', c('.add-class'), (ev) => {
@@ -406,12 +403,8 @@ export default class Detail {
             property = property.toLowerCase()
             setTimeout(() => {
               try {
-                let container = document.getElementsByClassName('luna-modal-footer')
-                let input = document.getElementsByClassName('luna-modal-input')
-                if (!container && !input) {
-                  container = document.getElementById('eruda')?.shadowRoot?.querySelector('.luna-modal-footer')
-                  input = document.getElementById('eruda')?.shadowRoot?.querySelector('.luna-modal-input')
-                }
+                const container = getQuerySelector('.luna-modal-footer')
+                const input = getQuerySelector('.luna-modal-input')
                 interval = setInterval(() => input?.focus(), 50)
                 var iframe = document.createElement('iframe')
                 iframe.style['margin-top'] = '15px'
@@ -434,15 +427,50 @@ export default class Detail {
           }
         })
       })
-      .on('click', c('.delete-style'), (el) => {
-        const key = el.curTarget.getAttribute('attr:key')
+      .on('click', c('.delete-inlinestyle'), () => {
+        const inlineEdit = getQuerySelector('#eruda-insert-style')
+        const removeButton = getQuerySelector('.eruda-delete-inlinestyle')
+        const inlineButton = getQuerySelector('.eruda-inline-styles')
+        if (inlineEdit) {
+          inlineEdit.remove()
+          removeButton?.classList.toggle('eruda-disabled')
+          inlineButton?.classList.toggle('eruda-active')
+        }
+      })
+      .on('click', c('.inline-styles'), () => {
+        const inlineEdit = getQuerySelector('#eruda-insert-style')
+        const inlineButton = getQuerySelector('.eruda-inline-styles')
+        const removeButton = getQuerySelector('.eruda-delete-inlinestyle')
+        if (!inlineEdit) {
+          removeButton?.classList.toggle('eruda-disabled')
+          inlineButton?.classList.toggle('eruda-active')
+          const divAbove = document.createElement('div');
+          const elementText = getQuerySelector('.eruda-element-styles')
+          divAbove.id = 'eruda-insert-style';
+          divAbove.innerHTML = '<input type="text" id="eruda-insert-style-property" /> : <input type="text" id="eruda-insert-style-value" />'
+          divAbove.addEventListener('keyup', (event) => {
+              event.preventDefault();
+              if (event.keyCode === 13) {
+                this.addInlineStyle()
+              }
+          })
+          elementText?.parentNode?.insertBefore(divAbove, elementText?.nextSibling);
+          divAbove?.firstChild?.focus()
+        } else {
+          this.addInlineStyle()
+        }
+      })
+      .on('click', c('.delete-style'), (ev) => {
+        ev.preventDefault()
+        ev.stopPropagation()
+        const key = ev.curTarget.getAttribute('attr:key')
         if (key) {
           this._curEl.style[key] = ''
           this._render()
         }
       })
-      .on('click', c('.delete-class'), (el) => {
-        const key = el.curTarget.getAttribute('attr:key')
+      .on('click', c('.delete-class'), (ev) => {
+        const key = ev.curTarget.getAttribute('attr:key')
         if (key) {
           this._curEl.classList.remove(key)
           this._render()

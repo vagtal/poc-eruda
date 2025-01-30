@@ -157,13 +157,13 @@ export default class Console extends Tool {
           <div class="button execute">Execute</div>
         </div>
         <span class="icon-arrow-right"></span>
-        <textarea></textarea>
+        <textarea class="console-text"></textarea>
       </div>
     `)
     )
 
     const _$inputContainer = $el.find(c('.js-input'))
-    const _$input = _$inputContainer.find('textarea')
+    const _$input = _$inputContainer.find('.console-text')
     const _$inputBtns = _$inputContainer.find(c('.buttons'))
 
     extend(this, {
