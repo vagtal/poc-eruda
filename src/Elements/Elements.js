@@ -16,7 +16,7 @@ import Detail from './Detail'
 import chobitsu from '../lib/chobitsu'
 import emitter from '../lib/emitter'
 import { formatNodeName } from './util'
-import { getQuerySelector, keybindManager } from '../utils'
+import { keybindManager } from '../utils'
 
 export default class Elements extends Tool {
   constructor() {
@@ -41,16 +41,13 @@ export default class Elements extends Tool {
           this._copyNode()
           this._deleteNode()
       } else if (event.ctrlKey && event.key === 'Enter') {
-        const container = getQuerySelector('.eruda-element-input')
-        if (container?.classList && !Array.from(container?.classList)?.includes('eruda-hidden')) {
+        if (!this._$inputContainer.hasClass(c('hidden'))) {
           this._changeElement()
         }
       } else if (event.key === 'Escape') {
-        const container = getQuerySelector('.eruda-element-input')
-        const textarea = getQuerySelector('.eruda-element-text')
-        if (container?.classList && !Array.from(container?.classList)?.includes('eruda-hidden')) {
+        if (!this._$inputContainer.hasClass(c('hidden'))) {
           this._toggleLSInput()
-          textarea?.blur()
+          this._$textarea[0]?.blur()
         }
       }
     })
@@ -138,9 +135,8 @@ export default class Elements extends Tool {
     }
   }
   _showSplit = () => {
-    const parent = getQuerySelector('#eruda-elements');
     this._showDetail()
-    parent?.classList?.toggle('eruda-split-view')
+    this._baseEl?.toggleClass(c('split-view'))
   }
   _showDetail = () => {
     if (!this._isShow || !this._curNode) {
@@ -185,6 +181,9 @@ export default class Elements extends Tool {
     this._$domViewer = $el.find(c('.dom-viewer'))
     this._$control = $el.find(c('.control'))
     this._$crumbs = $el.find(c('.crumbs'))
+    this._$container = $el.find(c('.elements'))
+    this._$inputContainer = $el.find(c('.element-input'))
+    this._$textarea = $el.find(c('.element-text'))
   }
   _renderCrumbs() {
     const crumbs = getCrumbs(this._curNode)
@@ -209,17 +208,13 @@ export default class Elements extends Tool {
     this._setNode(parent)
   }
   _toggleLSInput() {
-    const inputContainer = getQuerySelector('.eruda-element-input')
-    const elementContainer = getQuerySelector('.eruda-elements')
-    const detailContainer = getQuerySelector('.eruda-detail')
-    inputContainer?.classList?.toggle('eruda-hidden')
-    elementContainer?.classList?.toggle('eruda-hidden')
-    detailContainer?.classList?.toggle('eruda-hidden')
+    this._$inputContainer.toggleClass(c('hidden'))
+    this._$container.toggleClass(c('hidden'))
+    this._$detail.toggleClass(c('hidden'))
   }
   _changeElement() {
-    const textarea = getQuerySelector('.eruda-element-text')
     if (this._curNode) {
-      this._curNode.outerHTML = textarea.value
+      this._curNode.outerHTML = this._$textarea.val()
       this._toggleLSInput()
     }
   }
@@ -253,8 +248,7 @@ export default class Elements extends Tool {
       .on('click', c('.delete-node'), this._deleteNode)
       .on('click', c('.edit-node'), () => {
         if (this._curNode.tagName !== 'BODY' && this._curNode.tagName !== 'HEAD' && this._curNode.tagName !== 'HTML') {
-          const textarea = getQuerySelector('.eruda-element-text')
-          textarea.value = this._curNode.outerHTML || ''
+          this._$textarea.val(this._curNode.outerHTML || '')
           this._toggleLSInput()
         }
       })

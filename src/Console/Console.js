@@ -44,11 +44,11 @@ export default class Console extends Tool {
     this._bindEvent()
     keybindManager.addSection('console', async (event) => {
       if (event.ctrlKey && event.key === 'Enter') {
-        if (Array.from(this._$inputContainer[0]?.classList)?.includes('eruda-active')) {
+        if (this._$inputContainer.hasClass(c('active'))) {
           this._execute()
         }
       } else if (event.key === 'Escape') {
-        if (Array.from(this._$inputContainer[0]?.classList)?.includes('eruda-active')) {
+        if (this._$inputContainer.hasClass(c('active'))) {
           this._hideInput()
           this._$input[0]?.blur()
         }
@@ -181,7 +181,7 @@ export default class Console extends Tool {
     )
 
     const _$inputContainer = $el.find(c('.js-input'))
-    const _$input = _$inputContainer.find('.eruda-console-text')
+    const _$input = _$inputContainer.find(c('.console-text'))
     const _$inputBtns = _$inputContainer.find(c('.buttons'))
 
     extend(this, {
