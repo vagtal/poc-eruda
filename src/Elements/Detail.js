@@ -394,7 +394,6 @@ export default class Detail {
         const key = ev?.curTarget?.querySelector('.eruda-style-key')?.innerText
         const value = ev?.curTarget?.querySelector('.eruda-style-value')?.innerText
         key && value && this._showInline({key, value, parent: ev?.curTarget})
-
       })
       .on('click', c('.toggle-atributes'), () => {
         const container = getQuerySelector('.eruda-attributes .eruda-table-wrapper')

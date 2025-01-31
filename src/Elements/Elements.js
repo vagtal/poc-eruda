@@ -8,7 +8,6 @@ import MediaQuery from 'licia/MediaQuery'
 import isEmpty from 'licia/isEmpty'
 import toNum from 'licia/toNum'
 import copy from 'licia/copy'
-import isMobile from 'licia/isMobile'
 import isShadowRoot from 'licia/isShadowRoot'
 import LunaDomViewer from 'luna-dom-viewer'
 import { isErudaEl, classPrefix as c, isChobitsuEl } from '../lib/util'
@@ -305,10 +304,10 @@ export default class Elements extends Tool {
       chobitsu.domain('Overlay').setInspectMode({
         mode: 'searchForNode',
         highlightConfig: {
-          showInfo: !isMobile(),
-          showRulers: false,
-          showAccessibilityInfo: !isMobile(),
-          showExtensionLines: false,
+          showInfo: true,
+          showRulers: true,
+          showAccessibilityInfo: true,
+          showExtensionLines: true,
           contrastAlgorithm: 'aa',
           contentColor: 'rgba(111, 168, 220, .66)',
           paddingColor: 'rgba(147, 196, 125, .55)',
