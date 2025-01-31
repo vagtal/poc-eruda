@@ -1,8 +1,8 @@
-@import '../style/variable';
-@import '../style/mixin';
+@use '../style/variable';
+@use '../style/mixin';
 
 #resources {
-  @include overflow-auto(y);
+  @include mixin.overflow-auto(y);
   padding: 10px;
   font-size: 14px;
   .hidden {
@@ -56,7 +56,7 @@
       height: 40px;
       color: var(--primary);
       background: var(--darker-background);
-      font-size: $font-size-s;
+      font-size: variable.$font-size-s;
       border-top: 1px solid var(--border);
       .button {
         pointer-events: all;
@@ -66,7 +66,7 @@
         border-right: 1px solid var(--border);
         height: 40px;
         line-height: 40px;
-        transition: background-color $anim-duration, color $anim-duration;
+        transition: background-color variable.$anim-duration, color variable.$anim-duration;
         &:last-child {
           border-right: none;
         }
@@ -81,7 +81,7 @@
       padding: 3px 10px;
       outline: none;
       border: none;
-      font-size: $font-size;
+      font-size: variable.$font-size;
       width: 100%;
       height: calc(100% - 40px);
       user-select: text;
@@ -93,14 +93,14 @@
     }
   }
   .title {
-    padding: $padding;
+    padding: variable.$padding;
     line-height: 18px;
     color: var(--primary);
     background: var(--darker-background);
-    @include right-btn();
+    @include mixin.right-btn();
   }
   .link-list {
-    font-size: $font-size-s;
+    font-size: variable.$font-size-s;
     color: var(--foreground);
     li {
       padding: 10px;
@@ -112,11 +112,11 @@
   }
   .image-list {
     color: var(--foreground);
-    font-size: $font-size-s;
+    font-size: variable.$font-size-s;
     display: flex;
     flex-wrap: wrap;
-    padding-left: $padding;
-    padding-top: $padding;
+    padding-left: variable.$padding;
+    padding-top: variable.$padding;
     &::after {
       content: '';
       flex-grow: 1000;
@@ -125,8 +125,8 @@
       flex-grow: 1;
       cursor: pointer;
       overflow-y: hidden;
-      margin-right: $padding;
-      margin-bottom: $padding;
+      margin-right: variable.$padding;
+      margin-bottom: variable.$padding;
       border: 1px solid var(--border);
       &.image {
         height: 100px;
@@ -142,5 +142,5 @@
 }
 
 .safe-area #resources {
-  @include safe-area(padding-bottom, 10px);
+  @include mixin.safe-area(padding-bottom, 10px);
 }

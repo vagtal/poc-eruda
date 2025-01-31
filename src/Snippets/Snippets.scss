@@ -1,9 +1,9 @@
-@import '../style/variable';
-@import '../style/mixin';
+@use '../style/variable';
+@use '../style/mixin';
 
 #snippets {
-  @include overflow-auto(y);
-  padding: $padding;
+  @include mixin.overflow-auto(y);
+  padding: variable.$padding;
   .section {
     margin-bottom: 10px;
     border: 1px solid var(--border);
@@ -16,29 +16,29 @@
       }
     }
     .name {
-      padding: $padding;
+      padding: variable.$padding;
       line-height: 18px;
       color: var(--primary);
       background: var(--darker-background);
-      transition: background-color $anim-duration;
+      transition: background-color variable.$anim-duration;
       .btn {
         margin-left: 10px;
         float: right;
         text-align: center;
         width: 18px;
         height: 18px;
-        font-size: $font-size-s;
+        font-size: variable.$font-size-s;
       }
     }
     .description {
-      font-size: $font-size-s;
+      font-size: variable.$font-size-s;
       color: var(--foreground);
-      padding: $padding;
-      transition: background-color $anim-duration;
+      padding: variable.$padding;
+      transition: background-color variable.$anim-duration;
     }
   }
 }
 
 .safe-area #snippets {
-  @include safe-area(padding-bottom, 10px);
+  @include mixin.safe-area(padding-bottom, 10px);
 }

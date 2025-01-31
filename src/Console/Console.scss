@@ -1,5 +1,5 @@
-@import '../style/variable';
-@import '../style/mixin';
+@use '../style/variable';
+@use '../style/mixin';
 
 #console {
   padding-top: 40px;
@@ -11,7 +11,7 @@
   }
   .control {
     padding: 10px 10px 10px 35px;
-    @include control();
+    @include mixin.control();
     .icon-clear {
       padding-right: 0px;
       left: 0;
@@ -24,13 +24,13 @@
     }
     .level {
       cursor: pointer;
-      font-size: $font-size-s;
+      font-size: variable.$font-size-s;
       height: 20px;
       display: inline-block;
       margin: 0 2px;
       padding: 0 4px;
       line-height: 20px;
-      transition: background-color $anim-duration, color $anim-duration;
+      transition: background-color variable.$anim-duration, color variable.$anim-duration;
       &.active {
         background: var(--highlight);
         color: var(--select-foreground);
@@ -43,7 +43,7 @@
       max-width: 80px;
       overflow: hidden;
       right: 55px;
-      font-size: $font-size;
+      font-size: variable.$font-size;
       text-overflow: ellipsis;
     }
   }
@@ -86,7 +86,7 @@
       height: 40px;
       color: var(--primary);
       background: var(--darker-background);
-      font-size: $font-size-s;
+      font-size: variable.$font-size-s;
       border-top: 1px solid var(--border);
       .button {
         pointer-events: all;
@@ -96,7 +96,7 @@
         border-right: 1px solid var(--border);
         height: 40px;
         line-height: 40px;
-        transition: background-color $anim-duration, color $anim-duration;
+        transition: background-color variable.$anim-duration, color variable.$anim-duration;
         &:last-child {
           border-right: none;
         }
@@ -113,7 +113,7 @@
       padding-left: 25px;
       outline: none;
       border: none;
-      font-size: $font-size;
+      font-size: variable.$font-size;
       width: 100%;
       height: calc(100% - 40px);
       user-select: text;
@@ -125,20 +125,20 @@
 }
 
 .safe-area #console {
-  @include safe-area(padding-bottom, 24px);
+  @include mixin.safe-area(padding-bottom, 24px);
   &.js-input-hidden {
     padding-bottom: 0;
   }
   .js-input {
-    @include safe-area(height, 24px);
+    @include mixin.safe-area(height, 24px);
     &.active {
       height: 100%;
-      @include safe-area(padding-bottom, 40px);
+      @include mixin.safe-area(padding-bottom, 40px);
     }
     .buttons {
-      @include safe-area(height, 40px);
+      @include mixin.safe-area(height, 40px);
       .button {
-        @include safe-area(height, 40px);
+        @include mixin.safe-area(height, 40px);
       }
     }
   }

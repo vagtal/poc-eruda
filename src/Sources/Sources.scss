@@ -1,13 +1,13 @@
-@import '../style/variable';
-@import '../style/mixin';
+@use '../style/variable';
+@use '../style/mixin';
 
 #sources {
   font-size: 0;
-  @include overflow-auto(y);
+  @include mixin.overflow-auto(y);
   color: var(--foreground);
   .code-wrapper,
   .raw-wrapper {
-    @include overflow-auto(x);
+    @include mixin.overflow-auto(x);
     width: 100%;
     min-height: 100%;
   }
@@ -36,9 +36,9 @@
     }
   }
   .image {
-    font-size: $font-size-s;
+    font-size: variable.$font-size-s;
     .breadcrumb {
-      @include breadcrumb();
+      @include mixin.breadcrumb();
     }
     .img-container {
       text-align: center;
@@ -53,7 +53,7 @@
     }
   }
   .json {
-    padding: 0 $padding;
+    padding: 0 variable.$padding;
     * {
       user-select: text;
     }

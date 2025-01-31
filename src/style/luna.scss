@@ -1,4 +1,4 @@
-@import './variable';
+@use 'variable';
 
 .luna-console {
   background: var(--background);
@@ -151,7 +151,7 @@
 
 .luna-notification {
   pointer-events: none !important;
-  padding: $padding;
+  padding: variable.$padding;
   z-index: 1000;
 }
 
@@ -345,7 +345,7 @@
   border: none;
   border-bottom: 1px solid var(--border);
   background: var(--background);
-  font-size: $font-size-s;
+  font-size: variable.$font-size-s;
   .luna-text-viewer-line-text {
     user-select: text;
     * {
@@ -380,7 +380,7 @@
 }
 
 .luna-setting-item-title {
-  font-size: $font-size;
+  font-size: variable.$font-size;
 }
 
 .luna-setting-item-separator {

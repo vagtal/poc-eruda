@@ -1,5 +1,5 @@
-@import '../style/variable';
-@import '../style/mixin';
+@use '../style/variable';
+@use '../style/mixin';
 
 .hidden {
   display: none;
@@ -24,14 +24,14 @@
     width: 40px;
   }
   .elements {
-    @include absolute();
+    @include mixin.absolute();
     padding-top: 40px;
     padding-bottom: 24px;
     font-size: 14px;
   }
   .control {
     padding: 10px 0;
-    @include control();
+    @include mixin.control();
     .icon-eye {
       right: 40px;
     }
@@ -49,19 +49,19 @@
     }
   }
   .dom-viewer-container {
-    @include overflow-auto(y);
+    @include mixin.overflow-auto(y);
     height: 100%;
     padding: 5px 0;
   }
   .crumbs {
-    @include absolute(100%, 24px);
+    @include mixin.absolute(100%, 24px);
     top: initial;
     line-height: 24px;
     bottom: 0;
     border-top: 1px solid var(--border);
     background: var(--darker-background);
     color: var(--primary);
-    font-size: $font-size-s;
+    font-size: variable.$font-size-s;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -75,13 +75,13 @@
       }
     }
     .icon-arrow-right {
-      font-size: $font-size-s;
+      font-size: variable.$font-size-s;
       position: relative;
       top: 1px;
     }
   }
   .detail {
-    @include absolute();
+    @include mixin.absolute();
     z-index: 10;
     padding-top: 40px;
     display: none;
@@ -89,7 +89,7 @@
     .control {
       padding: 10px 35px;
       .element-name {
-        font-size: $font-size-s;
+        font-size: variable.$font-size-s;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
@@ -104,7 +104,7 @@
       }
     }
     .element {
-      @include overflow-auto(y);
+      @include mixin.overflow-auto(y);
       height: 100%;
     }
   }
@@ -116,11 +116,11 @@
       color: var(--primary);
       background: var(--darker-background);
       border-top: 1px solid var(--border);
-      padding: $padding;
+      padding: variable.$padding;
       line-height: 18px;
-      font-size: $font-size;
-      transition: background-color $anim-duration;
-      @include right-btn();
+      font-size: variable.$font-size;
+      transition: background-color variable.$anim-duration;
+      @include mixin.right-btn();
       &.active-effect {
         cursor: pointer;
       }
@@ -150,7 +150,7 @@
       height: 40px;
       color: var(--primary);
       background: var(--darker-background);
-      font-size: $font-size-s;
+      font-size: variable.$font-size-s;
       border-top: 1px solid var(--border);
       .button {
         pointer-events: all;
@@ -160,7 +160,7 @@
         border-right: 1px solid var(--border);
         height: 40px;
         line-height: 40px;
-        transition: background-color $anim-duration, color $anim-duration;
+        transition: background-color variable.$anim-duration, color variable.$anim-duration;
         &:last-child {
           border-right: none;
         }
@@ -175,7 +175,7 @@
       padding: 3px 10px;
       outline: none;
       border: none;
-      font-size: $font-size;
+      font-size: variable.$font-size;
       width: 100%;
       height: calc(100% - 40px);
       user-select: text;
@@ -187,7 +187,7 @@
     }
   }
   .attributes {
-    font-size: $font-size-s;
+    font-size: variable.$font-size-s;
     h2 {
       cursor:pointer;
       position: relative;
@@ -214,7 +214,7 @@
       color: var(--link-color);
     }
     .table-wrapper {
-      @include overflow-auto(x);
+      @include mixin.overflow-auto(x);
     }
     table {
       td {
@@ -226,8 +226,8 @@
   .text-content {
     background: #fff;
     .content {
-      @include overflow-auto(x);
-      padding: $padding;
+      @include mixin.overflow-auto(x);
+      padding: variable.$padding;
     }
   }
   .style-color {
@@ -241,13 +241,13 @@
     display: inline-block;
   }
   .box-model {
-    @include overflow-auto(x);
-    padding: $padding;
+    @include mixin.overflow-auto(x);
+    padding: variable.$padding;
     text-align: center;
     border-bottom: 1px solid var(--color);
   }
   .computed-style {
-    font-size: $font-size-s;
+    font-size: variable.$font-size-s;
     .computed-element {
       cursor: pointer;
     }
@@ -255,7 +255,7 @@
       color: var(--link-color);
     }
     .table-wrapper {
-      @include overflow-auto(y);
+      @include mixin.overflow-auto(y);
       max-height: 200px;
       border-top: 1px solid var(--border);
     }
@@ -270,7 +270,7 @@
     }
   }
   .styles {
-    font-size: $font-size-s;    
+    font-size: variable.$font-size-s;    
     .icon-delete {
       display: none;
     }
@@ -367,10 +367,10 @@
       }
     }
     .style-wrapper {
-      padding: $padding;
+      padding: variable.$padding;
       .style-rules {
         border: 1px solid var(--border);
-        padding: $padding;
+        padding: variable.$padding;
         margin-bottom: 10px;
         display: flex;
         flex-direction: column;
@@ -401,22 +401,22 @@
     }
   }
   .listeners {
-    font-size: $font-size-s;
+    font-size: variable.$font-size-s;
     .listener-wrapper {
-      padding: $padding;
+      padding: variable.$padding;
       .listener {
         margin-bottom: 10px;
         overflow: hidden;
         border: 1px solid var(--border);
         .listener-type {
-          padding: $padding;
+          padding: variable.$padding;
           background: var(--darker-background);
           color: var(--primary);
         }
         .listener-content {
           li {
-            @include overflow-auto(x);
-            padding: $padding;
+            @include mixin.overflow-auto(x);
+            padding: variable.$padding;
             border-top: none;
           }
         }
@@ -427,13 +427,13 @@
 
 .safe-area #elements {
   .elements {
-    @include safe-area(padding-bottom, 24px);
+    @include mixin.safe-area(padding-bottom, 24px);
   }
   .crumbs {
-    @include safe-area(height, 24px);
+    @include mixin.safe-area(height, 24px);
   }
   .element {
-    @include safe-area(padding-bottom, 0px);
+    @include mixin.safe-area(padding-bottom, 0px);
   }
 }
 

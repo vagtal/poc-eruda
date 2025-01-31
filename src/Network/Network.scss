@@ -1,17 +1,17 @@
-@import '../style/variable';
-@import '../style/mixin';
+@use '../style/variable';
+@use '../style/mixin';
 
 #network {
   .network {
-    @include absolute();
+    @include mixin.absolute();
     padding-top: 39px;
   }
   .control {
     padding: 10px;
     border-bottom: none;
-    @include control();
+    @include mixin.control();
     .title {
-      font-size: $font-size;
+      font-size: variable.$font-size;
     }
     .icon-clear {
       left: 23px;
@@ -32,7 +32,7 @@
       max-width: 80px;
       overflow: hidden;
       right: 88px;
-      font-size: $font-size;
+      font-size: variable.$font-size;
       text-overflow: ellipsis;
     }
     .icon-record {
@@ -58,7 +58,7 @@
     border-right: none;
   }
   .detail {
-    @include absolute();
+    @include mixin.absolute();
     z-index: 10;
     display: none;
     padding-top: 40px;
@@ -67,7 +67,7 @@
       padding: 10px 35px;
       border-bottom: 1px solid var(--border);
       .url {
-        font-size: $font-size-s;
+        font-size: variable.$font-size-s;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
@@ -86,7 +86,7 @@
       }
     }
     .http {
-      @include overflow-auto(y);
+      @include mixin.overflow-auto(y);
       height: 100%;
       .section {
         border-top: 1px solid var(--border);
@@ -96,9 +96,9 @@
         h2 {
           background: var(--darker-background);
           color: var(--primary);
-          padding: $padding;
+          padding: variable.$padding;
           line-height: 18px;
-          font-size: $font-size;
+          font-size: variable.$font-size;
         }
         table {
           color: var(--foreground);
@@ -106,7 +106,7 @@
             user-select: text;
           }
           td {
-            font-size: $font-size-s;
+            font-size: variable.$font-size-s;
             padding: 5px 10px;
             word-break: break-all;
           }
@@ -120,9 +120,9 @@
       .response,
       .data {
         user-select: text;
-        @include overflow-auto(x);
-        padding: $padding;
-        font-size: $font-size-s;
+        @include mixin.overflow-auto(x);
+        padding: variable.$padding;
+        font-size: variable.$font-size-s;
         margin: 10px 0;
         white-space: pre-wrap;
         border-top: 1px solid var(--border);
@@ -135,7 +135,7 @@
 
 .safe-area #network {
   .http {
-    @include safe-area(padding-bottom, 0px);
+    @include mixin.safe-area(padding-bottom, 0px);
   }
 }
 

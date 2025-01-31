@@ -1,6 +1,6 @@
-@import 'variable';
-@import 'mixin';
-@import 'luna';
+@use 'variable';
+@use 'mixin';
+@use 'luna';
 
 .container {
   min-width: 320px;
@@ -12,8 +12,8 @@
   height: 100%;
   z-index: 9999999;
   color: var(--foreground);
-  font-family: $font-family;
-  font-size: $font-size;
+  font-family: variable.$font-family;
+  font-size: variable.$font-size;
   direction: ltr;
   &.dark {
     color-scheme: dark;
@@ -37,7 +37,7 @@
     margin: 0;
   }
   h2 {
-    font-size: $font-size;
+    font-size: variable.$font-size;
     [class^='icon-'],
     [class*=' icon-'] {
       font-weight: normal;
