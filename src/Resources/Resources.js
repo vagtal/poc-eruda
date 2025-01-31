@@ -17,7 +17,7 @@ import evalCss from '../lib/evalCss'
 import Storage from './Storage'
 import Cookie from './Cookie'
 import { setState, getState } from './util'
-import { getQuerySelector, toValidJSONOrString } from '../utils'
+import { toValidJSONOrString, keybindManager } from '../utils'
 
 
 export default class Resources extends Tool {
@@ -56,6 +56,20 @@ export default class Resources extends Tool {
     this._bindEvent()
     this._initObserver()
     this._initCfg()
+    
+    keybindManager.addSection('resources', async (event) => {
+      if (event.ctrlKey && event.key === 'Enter') {
+        if (this._$container.hasClass(c('hidden'))) {
+          this._changeInput()
+          this._toggleLSInput()
+        }
+      } else if (event.key === 'Escape') {
+        if (this._$container.hasClass(c('hidden'))) {
+          this._toggleLSInput()
+          this._$container[0]?.blur()
+        }
+      }
+    })
   }
   refresh() {
     return this.refreshLocalStorage()
@@ -263,11 +277,13 @@ export default class Resources extends Tool {
     super.show()
     if (this._observeElement) this._enableObserver()
 
+    keybindManager.listeners.resources.keyboardListening = true
     return this.refresh()
   }
   hide() {
     this._disableObserver()
 
+    keybindManager.listeners.resources.keyboardListening = false
     return super.hide()
   }
   _initTpl() {
@@ -297,44 +313,47 @@ export default class Resources extends Tool {
     this._$stylesheet = $el.find(c('.stylesheet'))
     this._$iframe = $el.find(c('.iframe'))
     this._$image = $el.find(c('.image'))
+    this._$inputContainer = $el.find(c('.resource-input'))
+    this._$container = $el.find(c('.resources-container'))
+    this._$textarea = $el.find(c('.resource-text'))
   }
   _bindEvent() {
     const $el = this._$el
     const container = this._container
 
     $el
-      .on('click', '.eruda-resource-cancel', () => {
+      .on('click', c('.resource-cancel'), () => {
         this._toggleLSInput()
       })
-      .on('click', '.eruda-resource-execute', () => {
+      .on('click', c('.resource-execute'), () => {
         this._changeInput()
         this._toggleLSInput()
       })
-      .on('click', '.eruda-refresh-script', () => {
+      .on('click', c('.refresh-script'), () => {
         container.notify('Refreshed', { icon: 'success' })
         this.refreshScript()
       })
-      .on('click', '.eruda-refresh-stylesheet', () => {
+      .on('click', c('.refresh-stylesheet'), () => {
         console.log(this._localStorage)
         container.notify('Refreshed', { icon: 'success' })
         this.refreshStylesheet()
       })
-      .on('click', '.eruda-refresh-iframe', () => {
+      .on('click', c('.refresh-iframe'), () => {
         container.notify('Refreshed', { icon: 'success' })
         this.refreshIframe()
       })
-      .on('click', '.eruda-refresh-image', () => {
+      .on('click', c('.-refresh-image'), () => {
         container.notify('Refreshed', { icon: 'success' })
         this.refreshImage()
       })
-      .on('click', '.eruda-img-link', function () {
+      .on('click', c('.img-link'), function () {
         const src = $(this).attr('src')
 
         showSources('img', src)
       })
-      .on('click', '.eruda-css-link', linkFactory('css'))
-      .on('click', '.eruda-js-link', linkFactory('js'))
-      .on('click', '.eruda-iframe-link', linkFactory('iframe'))
+      .on('click', c('.css-link'), linkFactory('css'))
+      .on('click', c('.js-link'), linkFactory('js'))
+      .on('click', c('.iframe-link'), linkFactory('iframe'))
 
     function showSources(type, data) {
       const sources = container.get('sources')
@@ -369,15 +388,12 @@ export default class Resources extends Tool {
     }
   }
   _toggleLSInput() {
-    const inputContainer = getQuerySelector('.eruda-resource-input')
-    const resourcesContainer = getQuerySelector('.eruda-resources-container')
-    inputContainer?.classList?.toggle('eruda-hidden')
-    resourcesContainer?.classList?.toggle('eruda-hidden')
+    this._$inputContainer.toggleClass(c('hidden'))
+    this._$container.toggleClass(c('hidden'))
   }
   _changeInput() {
     try {
-      const textarea = getQuerySelector('.eruda-resource-text')
-      window[this.editInput.type].setItem(this.editInput.key, toValidJSONOrString(textarea?.value))
+      window[this.editInput.type].setItem(this.editInput.key, toValidJSONOrString(this._$textarea?.val()))
     } catch (err) {
       console.eror(err)
     }
@@ -388,16 +404,12 @@ export default class Resources extends Tool {
     const objType = this[`_${type}Storage`]?._selectedItem
     const textType = `${type}Storage`
     if (objType) {
-      const textarea = getQuerySelector('.eruda-resource-text')
-      const data = window[textType]?.getItem(objType)
-      if (textarea) {
-        textarea.value = data || ''
-        this.editInput = {
-          type: textType,
-          key: objType
-        }
-        this._toggleLSInput()
+      this._$textarea.val(window[textType]?.getItem(objType) || '')
+      this.editInput = {
+        type: textType,
+        key: objType
       }
+      this._toggleLSInput()
     }
   }
   _rmCfg() {

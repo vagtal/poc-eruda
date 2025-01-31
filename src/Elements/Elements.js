@@ -41,13 +41,14 @@ export default class Elements extends Tool {
           this._copyNode()
           this._deleteNode()
       } else if (event.ctrlKey && event.key === 'Enter') {
-        const textarea = getQuerySelector('.eruda-element-text')
-        if (textarea?.classList && !Array.from(textarea?.classList)?.includes('eruda-hidden')) {
+        const container = getQuerySelector('.eruda-element-input')
+        if (container?.classList && !Array.from(container?.classList)?.includes('eruda-hidden')) {
           this._changeElement()
         }
       } else if (event.key === 'Escape') {
+        const container = getQuerySelector('.eruda-element-input')
         const textarea = getQuerySelector('.eruda-element-text')
-        if (textarea?.classList && !Array.from(textarea?.classList)?.includes('eruda-hidden')) {
+        if (container?.classList && !Array.from(container?.classList)?.includes('eruda-hidden')) {
           this._toggleLSInput()
           textarea?.blur()
         }
