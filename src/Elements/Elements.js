@@ -49,7 +49,11 @@ export default class Elements extends Tool {
           this._toggleLSInput()
           this._$textarea[0]?.blur()
         }
-      }
+      }  /*else if (event.ctrlKey && (event.key === 'Z' || event.key === 'z')) {
+        elementHistory.undo()
+      }  else if (event.ctrlKey && (event.key === 'Y' || event.key === 'y')) {
+        elementHistory.redo()
+      }*/
     })
 
     Emitter.mixin(this)

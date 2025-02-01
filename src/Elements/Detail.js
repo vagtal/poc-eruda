@@ -348,7 +348,17 @@ export default class Detail {
     if (styleProperty?.length && styleValue?.length) {
       if (styleProperty.includes('/*')) {
         this._curEl?.style?.removeProperty(styleProperty.replace(/^\/\*/, '').trim())
-        this._curEl.setAttribute('style', (this._curEl.getAttribute('style') || '') + `${styleProperty}:${styleValue}`);
+        this._curEl.setAttribute('style', (this._curEl.getAttribute('style') || '') + `${styleProperty}:${styleValue}`)
+        /*elementHistory.action({
+          undo: {
+            fn: (style) => this._curEl.setAttribute('style', style),
+            args: [this._curEl.getAttribute('style')]
+          },
+          redo: {
+            fn: (styleProperty, styleValue) => this._curEl.setAttribute('style', (this._curEl.getAttribute('style') || '') + `${styleProperty}:${styleValue}`),
+            args: [styleProperty, styleValue]
+          }
+        })*/
       } else {
         if (
           this._curEl.getAttribute('style')?.includes(`/*${styleProperty}:${styleValue}*/`) ||
@@ -363,7 +373,7 @@ export default class Detail {
         }
         styleValue = styleValue.split('!')
         this._curEl.style.setProperty(styleProperty?.trim(), styleValue[0]?.replace(';', '')?.trim(), styleValue[1]?.trim())  
-      } 
+      }
       this._render()
     }
   }

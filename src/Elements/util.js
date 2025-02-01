@@ -13,6 +13,28 @@ export function valImportant(val) {
   return val?.includes('!important') ? `${splitted[0]} <span class="eruda-important">${splitted[1]}</span>` : val
 }
 
+/*class ElementHistory {
+  undoArr = []
+  redoArr = []
+  constructor() {}
+  action(action) {
+    this.undoArr.push(action)
+    this.redoArr = []
+  }
+  undo(){
+    const action = this.undoArr.pop()
+    action?.undo.fn(...action.undo.args)
+    action && this.redoArr.push(action)
+  }
+  redo(){
+    const action = this.redoArr.pop()
+    action?.redo.fn(...action.redo.args)
+    action && this.undoArr.push(action)
+  }
+}
+
+export const elementHistory = new ElementHistory()*/
+
 export function formatNodeName(node, { noAttr = false } = {}) {
   if (node.nodeType === Node.TEXT_NODE) {
     return `<span class="${c('tag-name-color')}">(text)</span>`
