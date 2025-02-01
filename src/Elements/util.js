@@ -5,12 +5,12 @@ import { classPrefix as c } from '../lib/util'
 
 export function sepateStyles(syl) {
   const regex = /\/\*.*?\*\/|[^;]+;/g
-  return syl.match(regex).map(e => e.trim())
+  return syl?.match(regex)?.map(e => e.trim())
 }
 
 export function valImportant(val) {
-  const splitted = val.split('!')
-  return val.includes('!important') ? `${splitted[0]} <span class="eruda-important">${splitted[1]}</span>` : val
+  const splitted = val?.split('!')
+  return val?.includes('!important') ? `${splitted[0]} <span class="eruda-important">${splitted[1]}</span>` : val
 }
 
 export function formatNodeName(node, { noAttr = false } = {}) {

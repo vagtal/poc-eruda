@@ -199,14 +199,17 @@ export default class Detail {
         const isElementStyle = selectorText === 'element.style'
         
         style = map(style, (val, key) => {
-          return `<div class="${c('rule')} ${isElementStyle ? (!inlineStyles?.find(is => is.key === key)  ? 'eruda-secondary-rule'  : '') : ''}">${isElementStyle ?  `<i attr:key="${key}"
+          return `<div class="${c('rule')} ${isElementStyle ? 
+            (!inlineStyles?.find(is => is.key === key)  ? 'eruda-secondary-rule'  : '') :
+            ''}">${isElementStyle ?  `<i attr:key="${key}"
            class="eruda-icon eruda-icon-delete ${c('delete-style')}"></i>` : ''}<span class="eruda-property-container"><span class="eruda-porperty-color eruda-style-key">${escape(
             key
           )}</span>: <span class="eruda-style-value">${val}</span></span></div>`
         }).join('')
         return `<div class="${c('style-rules')}">
-          <div class="${isElementStyle ? c('element-styles') : ''}">${escape(selectorText)} {  ${isElementStyle ? `
-          <i class="eruda-icon eruda-icon-delete eruda-disabled ${c('delete-inlinestyle')}"></i><i class="eruda-icon-play ${c('inline-styles')}"></i>` : ''}</div>
+          <div class="${isElementStyle ? c('element-styles') : ''}">${escape(selectorText)} {  ${isElementStyle ? 
+            `<i class="eruda-icon eruda-icon-delete eruda-disabled ${c('delete-inlinestyle')}"></i><i class="eruda-icon-play ${c('inline-styles')}"></i>` :
+            ''}</div>
             ${style}
           <div>}</div>
         </div>`
@@ -340,42 +343,64 @@ export default class Detail {
     return ret
   }
   addInlineStyle() {    
-    const styleProperty = getQuerySelector('#eruda-insert-style-property')?.value
-    let styleValue = getQuerySelector('#eruda-insert-style-value')?.value
+    const styleProperty = this._$container.find('#eruda-insert-style-property')?.val()
+    let styleValue = this._$container.find('#eruda-insert-style-value')?.val()
     if (styleProperty?.length && styleValue?.length) {
-      styleValue = styleValue.split('!')
-      this._curEl.style.setProperty(styleProperty?.trim(), styleValue[0]?.trim(), styleValue[1]?.trim())
+      if (styleProperty.includes('/*')) {
+        this._curEl?.style?.removeProperty(styleProperty.replace(/^\/\*/, '').trim())
+        this._curEl.setAttribute('style', (this._curEl.getAttribute('style') || '') + `${styleProperty}:${styleValue}`);
+      } else {
+        if (
+          this._curEl.getAttribute('style')?.includes(`/*${styleProperty}:${styleValue}*/`) ||
+          this._curEl.getAttribute('style')?.includes(`/* ${styleProperty}: ${styleValue} */`) ||
+          this._curEl.getAttribute('style')?.includes(`/* ${styleProperty}:${styleValue} */`)
+          ) {
+          this._curEl?.setAttribute('style', (this._curEl.getAttribute('style') || '')
+            .replace(`/*${styleProperty}:${styleValue}*/`, '')
+            .replace(`/* ${styleProperty}: ${styleValue} */`, '')
+            .replace(`/* ${styleProperty}:${styleValue} */`, '')
+          )
+        }
+        styleValue = styleValue.split('!')
+        this._curEl.style.setProperty(styleProperty?.trim(), styleValue[0]?.replace(';', '')?.trim(), styleValue[1]?.trim())  
+      } 
       this._render()
     }
   }
-  _changeDisplay(container) {
-    if (container?.style?.display !== 'none') {
-      container.style.display = 'none'
-    } else if (container) {
-      container.style.display = 'block'
-    }
-  }
   _showInline(data) {
-    const inlineEdit = getQuerySelector('#eruda-insert-style')
-    const inlineButton = getQuerySelector('.eruda-inline-styles')
-    const removeButton = getQuerySelector('.eruda-delete-inlinestyle')
-    if (!inlineEdit) {
-      removeButton?.classList.toggle('eruda-disabled')
-      inlineButton?.classList.toggle('eruda-active')
-      const divAbove = document.createElement('div');
-      const elementText = getQuerySelector('.eruda-element-styles')
-      divAbove.id = 'eruda-insert-style';
-      divAbove.innerHTML = `<input type="text" id="eruda-insert-style-property" value="${data?.key || ''}"/> : <input type="text" id="eruda-insert-style-value"  value="${data?.value || ''}"/>`
+    const inlineEdit = this._$container.find(c('.insert-style'))
+    const removeButton = this._$container.find(c('.delete-inlinestyle'))
+    const inlineButton = this._$container.find(c('.inline-styles'))
+    if (!inlineEdit[0]) {
+      removeButton?.toggleClass(c('disabled'))
+      inlineButton?.toggleClass(c('active'))
+      const divAbove = document.createElement('div')
+      divAbove.id = c('insert-style')
+      divAbove.className = c('insert-style')
+      divAbove.innerHTML = `<input type="text" id="${c('insert-style-property')}" value="${data?.key || ''}"/> : <input type="text" id="${c('insert-style-value')}"  value="${data?.value || ''}"/>`
       data?.parent && data.parent.remove()
       divAbove.addEventListener('keyup', (event) => {
           event.preventDefault();
-          if (event.keyCode === 13) {
+          if (event.key === 'Enter') {
             this.addInlineStyle()
             data && this._render()
-            inlineButton?.classList.toggle('eruda-active')
+            inlineButton?.toggleClass(c('active'))
+          } else if (event.key === 'Escape') {
+            this._render()
+          } else if (event.ctrlKey && event.key === '/') {
+            const key = getQuerySelector(c('#insert-style-property'))
+            const value = getQuerySelector(c('#insert-style-value'))
+            if (key?.value.includes('/*')) {
+              key.value = key.value.replace(/^\/\*/, '').trim()
+              value.value = value.value.replace(/\s*\*\/\s*$/, '').trim();
+            } else if (key) {
+              key.value = '/*' + key.value
+              value.value = value.value + '*/'
+            }
           }
       })
-      elementText?.parentNode?.insertBefore(divAbove, elementText?.nextSibling);
+      const elementText = getQuerySelector(c('.element-styles'))
+      elementText?.parentNode?.insertBefore(divAbove, elementText?.nextSibling)
       divAbove?.firstChild?.focus()
     } else {
       this.addInlineStyle()
@@ -391,19 +416,15 @@ export default class Detail {
       .on('click', c('.property-container'), (ev) => {
         ev.preventDefault()
         ev.stopPropagation()
-        const key = ev?.curTarget?.querySelector('.eruda-style-key')?.innerText
-        const value = ev?.curTarget?.querySelector('.eruda-style-value')?.innerText
+        const key = ev?.curTarget?.querySelector(c('.style-key'))?.innerText
+        const value = ev?.curTarget?.querySelector(c('.style-value'))?.innerText
         key && value && this._showInline({key, value, parent: ev?.curTarget})
       })
       .on('click', c('.toggle-atributes'), () => {
-        const container = getQuerySelector('.eruda-attributes .eruda-table-wrapper')
-        this._changeDisplay(container)
+        this._$container.find(`${c('.attributes')} ${c('.table-wrapper')}`)?.toggleClass(c('hidden'))
       })
-      .on('click', c('.toggle-styles'), () => {
-        const containers = getQuerySelector('.eruda-styles .eruda-style-wrapper', true)
-        containers?.forEach(container => {
-          this._changeDisplay(container)
-        })
+      .on('click', c('.toggle-styles'), () => {        
+        this._$container.find(`${c('.styles')} ${c('.style-wrapper')}`)?.toggleClass(c('hidden'))
       })
       .on('click', c('.add-class'), (ev) => {
         ev.preventDefault()
@@ -459,13 +480,13 @@ export default class Detail {
         })
       })
       .on('click', c('.delete-inlinestyle'), () => {
-        const inlineEdit = getQuerySelector('#eruda-insert-style')
-        const removeButton = getQuerySelector('.eruda-delete-inlinestyle')
-        const inlineButton = getQuerySelector('.eruda-inline-styles')
-        if (inlineEdit) {
+        const inlineEdit = this._$container.find(c('.insert-style'))
+        const removeButton = this._$container.find(c('.delete-inlinestyle'))
+        const inlineButton = this._$container.find(c('.inline-styles'))
+        if (inlineEdit[0]) {
           inlineEdit.remove()
-          removeButton?.classList.toggle('eruda-disabled')
-          inlineButton?.classList.toggle('eruda-active')
+          removeButton?.toggleClass(c('disabled'))
+          inlineButton?.toggleClass(c('active'))
         }
       })
       .on('click', c('.inline-styles'), () => this._showInline())
@@ -493,7 +514,7 @@ export default class Detail {
           this._render()
         })
       })
-      .on('click', '.eruda-listener-content', function () {
+      .on('click', c('.listener-content'), function () {
         const text = $(this).text()
         const sources = devtools.get('sources')
 

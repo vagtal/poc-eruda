@@ -215,6 +215,9 @@
     }
     .table-wrapper {
       @include mixin.overflow-auto(x);
+      &.hidden {
+        display: none;
+      }
     }
     table {
       td {
@@ -270,10 +273,7 @@
     }
   }
   .styles {
-    font-size: variable.$font-size-s;    
-    .icon-delete {
-      display: none;
-    }
+    font-size: variable.$font-size-s;
     .porperty-color {
       color: #78DCE8 !important;
     }
@@ -368,6 +368,9 @@
     }
     .style-wrapper {
       padding: variable.$padding;
+      &.hidden {
+        display: none;
+      }
       .style-rules {
         border: 1px solid var(--border);
         padding: variable.$padding;
